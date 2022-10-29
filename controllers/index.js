@@ -1,4 +1,4 @@
-const { userData } = require("../gistfile1")
+let { userData } = require("../gistfile1")
 
 const getUser = (req, res) =>{
     try {
@@ -36,12 +36,12 @@ const updateAddress = (req, res) =>{
         const {params: {id}} = req
         const {body: {newAddress}} = req
 
-        const currentUSer = userData.find( user =>  user.id == id )
-        const statusValue = (currentUSer == undefined) ? 404 : 200
+        const currentUser = userData.find( user =>  user.id == id )
+        const statusValue = (currentUser == undefined) ? 404 : 200
 
         const updatedUser = {
-            ...currentUSer,
-            address: newAddress
+            ...currentUser,
+            "address": newAddress
         }
 
         res.send({
@@ -55,7 +55,43 @@ const updateAddress = (req, res) =>{
     }
 }
 
+const createUser = (req, res) => {
+    try {
+        const {body: {email}} = req
+        console.log(req)
+        const newID = Math.round( Math.random() * 500 + 5 )
+        const newUser = {
+            id: newID,
+            email: email
+        }
+        userData = [...userData, newUser]
+
+        res.send( userData.map( u => `${u.id}, ${u.email}` ) )
+
+    } catch (error) {
+        res.send(error)
+    }
+}
+
+const deleteUser = (req, res) => {
+    try {
+        const {params : {id}} = req
+        const currentUser = userData.find( user =>  user.id == id )
+        const index = userData.indexOf(currentUser)
+
+        delete userData[index];
+
+        res.send( userData.map( user => `${user.id}, ${user.email}` ) )
+        
+
+    } catch (error) {
+        res.send(error)
+    }
+}
+
 module.exports = {
     getUser,
-    updateAddress
+    updateAddress,
+    createUser,
+    deleteUser
 }
