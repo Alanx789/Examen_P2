@@ -1,41 +1,61 @@
-const {userData} = require('../gistfile1.js')
+const { userData } = require("../gistfile1")
 
-const getUser = async (req, res) => {
+const getUser = (req, res) =>{
     try {
         const { params: {id} } = req
-        const user = userData.find( (u) => {u.id === id} )
-        
-        const value = (user===undefined) ? {status:404} : {status:200} 
-        res.send(value)
+        const currentUSer = userData.find( user =>  user.id == id )
 
-    } catch (error) {
-        res.send( {status : 500} )
-    }
-}
+        const {
+            firstName,
+            lastName,
+            maidenName,
+            email,
+            age,
+            address,
+            company
+        } = currentUSer
 
-
-
-const updateAdress = async (req, res) => {
-
-    try {
-        const {params: {id} } = req
-        console.log(id)
         res.send({
-            status : 200,
+            status: 200,
+            user : {
+                fullname: `${firstName} ${lastName} ${maidenName}`,
+                email: email,
+                age: age,
+                address: address,
+                jobTitle: company.title
+            } 
         })
 
-        const user = userData.find( (u) => { u == id} )
-
-        const value = (user===undefined) ? {status:404} : {status:200} 
-        res.send(value)
-
     } catch (error) {
-        res.send( {status : 500 })
+        res.send(error)
     }
 }
 
+const updateAddress = (req, res) =>{
+    try {
+        const {params: {id}} = req
+        const {body: {newAddress}} = req
+
+        const currentUSer = userData.find( user =>  user.id == id )
+        const statusValue = (currentUSer == undefined) ? 404 : 200
+
+        const updatedUser = {
+            ...currentUSer,
+            address: newAddress
+        }
+
+        res.send({
+            status: statusValue,
+            user: updatedUser
+        })
+        
+
+    } catch (error) {
+        res.send(error)
+    }
+}
 
 module.exports = {
     getUser,
-    updateAdress
+    updateAddress
 }
